@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ikas Kategori Navigasyon Kodu Üretici</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #111111;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-600: #1d4ed8;
+      --border: #e5e7eb;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    h1 {
+      font-size: 20px;
+      margin: 0 0 4px 0;
+    }
+
+    p.desc {
+      margin: 0 0 16px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    input[type="text"]:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    textarea {
+      min-height: 160px;
+      resize: vertical;
+    }
+
+    .row {
+      display: grid;
+      gap: 12px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--primary);
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background .15s ease, transform .02s ease;
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--primary);
+    }
+
+    button:active { transform: translateY(1px); }
+    button:hover { background: var(--primary-600); }
+    button.secondary:hover { background: rgba(37, 99, 235, 0.08); }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .error {
+      color: #b91c1c;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .output textarea {
+      min-height: 240px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      white-space: pre;
+    }
+
+    /* Preview styles area */
+    .preview {
+      border-top: 1px dashed var(--border);
+      padding-top: 16px;
+    }
+
+    .preview .box {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    /* Categories grid */
+    .cat-table {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .cat-head {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .inline {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .inline small { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>ikas Kategori Navigasyon Kodu Üretici</h1>
+      <p class="desc">Mağaza adınızı ve kategorilerinizi girin, anında gömülebilir HTML/CSS çıktısı alın.</p>
+
+      <div class="grid">
+        <div class="row">
+          <label for="storeName">Mağaza Adı</label>
+          <input id="storeName" type="text" placeholder="ornekmagaza" autocomplete="off">
+          <div class="hint">Bağlantılar şu formata göre oluşturulur: https://[magaza-adi].ikas.shop/[slug]</div>
+          <div id="storeError" class="error" style="display:none"></div>
+        </div>
+
+        <div class="row">
+          <label>Kategoriler</label>
+          <div class="cat-table" id="catTable">
+            <div class="cat-head">Kategori Adı</div>
+            <div class="cat-head">Slug</div>
+            <div class="cat-head"></div>
+            <!-- Rows eklenecek -->
+          </div>
+          <div class="actions" style="margin-top:6px">
+            <button id="addRowBtn" type="button" class="secondary">Satır Ekle</button>
+          </div>
+          <div id="catError" class="error" style="display:none"></div>
+        </div>
+
+        <div class="row">
+          <label>Metin Stilleri</label>
+          <div class="inline">
+            <div>
+              <label for="textColor">Metin Rengi (Hex)</label>
+              <input id="textColor" type="text" placeholder="#111111" value="#111111">
+            </div>
+            <div>
+              <label for="hoverColor">Hover Rengi (Hex)</label>
+              <input id="hoverColor" type="text" placeholder="#2563eb" value="#2563eb">
+            </div>
+            <div>
+              <label for="fontSize">Yazı Boyutu (px)</label>
+              <input id="fontSize" type="number" min="10" max="48" step="1" value="14">
+            </div>
+            <div style="margin-top:22px">
+              <label class="inline" style="gap:6px">
+                <input id="boldToggle" type="checkbox"> <span>Kalın (bold)</span>
+              </label>
+            </div>
+          </div>
+          <div class="hint">Varsayılanlar mevcut görünümü korur. Hex renkleri # ile girin.</div>
+        </div>
+
+        <div class="actions">
+          <button id="generateBtn">Kodu Oluştur</button>
+          <button id="copyBtn" class="secondary" type="button">Çıktıyı Kopyala</button>
+        </div>
+
+        <div class="row output">
+          <label for="output">Üretilen Kod</label>
+          <textarea id="output" readonly placeholder="Burada kod görünecek..."></textarea>
+          <div class="hint">Bu kodu sitenize gömerek kategori navigasyonunu gösterin.</div>
+        </div>
+
+        <div class="row preview">
+          <div class="box">
+            <div class="hint" style="margin-bottom:8px">Önizleme</div>
+            <div id="livePreview"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function normalizeStoreName(raw) {
+      if (!raw) return "";
+      const map = {
+        'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u',
+        'Ç':'c','Ğ':'g','İ':'i','I':'i','Ö':'o','Ş':'s','Ü':'u'
+      };
+      const replaced = raw.trim().replace(/[çğıöşüÇĞİIÖŞÜ]/g, c => map[c] || c);
+      return replaced
+        .toLowerCase()
+        .replace(/[^a-z0-9-]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .replace(/-{2,}/g, '-');
+    }
+
+    function readCategoriesFromTable() {
+      const table = document.getElementById('catTable');
+      const rows = Array.from(table.querySelectorAll('.cat-row'));
+      const items = [];
+      for (const row of rows) {
+        const nameInput = row.querySelector('input[data-field="name"]');
+        const slugInput = row.querySelector('input[data-field="slug"]');
+        const label = (nameInput?.value || '').trim();
+        const slug = (slugInput?.value || '').trim();
+        if (label) items.push({ label, slug }); // slug boş olabilir (Anasayfa)
+      }
+      return items;
+    }
+
+    function buildOutputHTML(storeName, categories, opts) {
+      const domain = `https://${storeName}.ikas.shop`;
+      const textColor = opts?.textColor || '#111111';
+      const hoverColor = opts?.hoverColor || '#2563eb';
+      const fontWeight = opts?.bold ? '700' : '400';
+      const fontSize = Number(opts?.fontSize) || 14;
+      const css = `<style>\n` +
+`  .ikas-nav-wrap {\n` +
+`    display: flex;\n` +
+`    justify-content: center;\n` +
+`    padding: 16px;\n` +
+`  }\n` +
+`  .ikas-nav {\n` +
+`    background: #ffffff;\n` +
+`    color: ${textColor};\n` +
+`    border: 1px solid #e5e7eb;\n` +
+`    border-radius: 12px;\n` +
+`    padding: 12px 16px;\n` +
+`    max-width: 960px;\n` +
+`    width: 100%;\n` +
+`    box-sizing: border-box;\n` +
+`  }\n` +
+`  .ikas-nav ul {\n` +
+`    list-style: none;\n` +
+`    display: flex;\n` +
+`    flex-wrap: wrap;\n` +
+`    gap: 12px 16px;\n` +
+`    margin: 0;\n` +
+`    padding: 0;\n` +
+`    align-items: center;\n` +
+`    justify-content: center;\n` +
+`  }\n` +
+`  .ikas-nav a {\n` +
+`    text-decoration: none;\n` +
+`    color: ${textColor};\n` +
+`    padding: 6px 10px;\n` +
+`    border-radius: 8px;\n` +
+`    transition: color .15s ease, background .15s ease;\n` +
+`    font-weight: ${fontWeight};\n` +
+`    font-size: ${fontSize}px;\n` +
+`  }\n` +
+`  .ikas-nav a:hover {\n` +
+`    color: ${hoverColor};\n` +
+`  }\n` +
+`  @media (max-width: 600px) {\n` +
+`    .ikas-nav { padding: 10px 12px; }\n` +
+`    .ikas-nav a { padding: 6px 8px; }\n` +
+`  }\n` +
+`</style>`;
+
+      const list = categories.map(c => {
+        const href = c.slug ? `${domain}/${c.slug}` : `${domain}`;
+        return `    <li><a href="${href}">${c.label}</a></li>`;
+      }).join("\n");
+
+      const html = [
+        css,
+        '<nav class="ikas-nav-wrap">',
+        '  <div class="ikas-nav">',
+        '    <ul>',
+        list,
+        '    </ul>',
+        '  </div>',
+        '</nav>'
+      ].join("\n");
+
+      return html;
+    }
+
+    function updatePreview(html) {
+      const holder = document.getElementById('livePreview');
+      holder.innerHTML = html || '';
+    }
+
+    function showError(id, message) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (message) {
+        el.textContent = message;
+        el.style.display = '';
+      } else {
+        el.textContent = '';
+        el.style.display = 'none';
+      }
+    }
+
+    function handleGenerate() {
+      const rawStore = document.getElementById('storeName').value;
+      const normalizedStore = normalizeStoreName(rawStore);
+      const items = readCategoriesFromTable();
+
+      const hexOk = (v) => /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test((v||'').trim());
+      const textColorInput = document.getElementById('textColor').value.trim() || '#111111';
+      const hoverColorInput = document.getElementById('hoverColor').value.trim() || '#2563eb';
+      const textColor = hexOk(textColorInput) ? textColorInput : '#111111';
+      const hoverColor = hexOk(hoverColorInput) ? hoverColorInput : '#2563eb';
+      const fontSize = parseInt(document.getElementById('fontSize').value, 10) || 14;
+      const bold = document.getElementById('boldToggle').checked;
+
+      let hasError = false;
+      if (!normalizedStore) {
+        showError('storeError', 'Lütfen geçerli bir mağaza adı girin.');
+        hasError = true;
+      } else {
+        showError('storeError', '');
+      }
+      if (!items.length) {
+        showError('catError', 'En az bir kategori satırı girin.');
+        hasError = true;
+      } else {
+        showError('catError', '');
+      }
+      if (hasError) return;
+
+      const html = buildOutputHTML(normalizedStore, items, {
+        textColor,
+        hoverColor,
+        bold,
+        fontSize
+      });
+      const out = document.getElementById('output');
+      out.value = html;
+      updatePreview(html);
+    }
+
+    function handleCopy() {
+      const out = document.getElementById('output');
+      out.select();
+      out.setSelectionRange(0, out.value.length);
+      const ok = document.execCommand ? document.execCommand('copy') : false;
+      if (!ok && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(out.value).catch(() => {});
+      }
+    }
+
+    function addCategoryRow(name = '', slug = '', insertAfterRow = null) {
+      const table = document.getElementById('catTable');
+      const row = document.createElement('div');
+      row.className = 'cat-row';
+      row.style.display = 'contents';
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.placeholder = 'Giyim';
+      nameInput.value = name;
+      nameInput.setAttribute('data-field', 'name');
+      const slugInput = document.createElement('input');
+      slugInput.type = 'text';
+      slugInput.placeholder = 'giyim';
+      slugInput.value = slug;
+      slugInput.setAttribute('data-field', 'slug');
+      const btns = document.createElement('div');
+      btns.className = 'inline';
+      const copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.className = 'secondary';
+      copyBtn.textContent = 'Kopyala';
+      copyBtn.addEventListener('click', () => {
+        addCategoryRow(nameInput.value, slugInput.value, row);
+      });
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'secondary';
+      removeBtn.textContent = 'Sil';
+      removeBtn.addEventListener('click', () => {
+        row.remove();
+      });
+      btns.appendChild(copyBtn);
+      btns.appendChild(removeBtn);
+      row.appendChild(nameInput);
+      row.appendChild(slugInput);
+      row.appendChild(btns);
+      if (insertAfterRow && insertAfterRow.nextSibling) {
+        table.insertBefore(row, insertAfterRow.nextSibling);
+      } else {
+        table.appendChild(row);
+      }
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', handleGenerate);
+    document.getElementById('copyBtn').addEventListener('click', handleCopy);
+    document.getElementById('addRowBtn').addEventListener('click', () => addCategoryRow());
+
+    // Demo içerik
+    document.getElementById('storeName').value = 'ornekmagaza';
+    addCategoryRow('Giyim', 'giyim');
+    addCategoryRow('Ayakkabı', 'ayakkabi');
+    addCategoryRow('Aksesuar', 'aksesuar');
+  </script>
+</body>
+</html>
